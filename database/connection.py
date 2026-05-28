@@ -27,11 +27,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
 
-
-async def create_tables() -> None:
-    """Create tables for all ORM models that inherit from Base."""
-    import models.employee  # noqa: F401 — registers the mapper before create_all
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-

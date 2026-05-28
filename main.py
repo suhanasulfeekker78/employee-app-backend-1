@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from middleware import configure_middleware
 
-from database import create_tables
 from routers.employee_router import router as employee_router
 from config import APP_ENV
 
@@ -17,7 +16,6 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_tables()
     yield
 
 app = FastAPI(
