@@ -1,0 +1,39 @@
+2026-05-27 15:06:33 INFO middleware.logger 127.0.0.1 POST /employee 201 2ms
+2026-05-27 15:06:33 INFO middleware.logger 127.0.0.1 POST /employee 201 1ms
+2026-05-27 15:06:33 INFO middleware.logger 127.0.0.1 POST /employee 201 1ms
+2026-05-27 15:06:33 INFO middleware.logger 127.0.0.1 POST /employee 201 1ms
+2026-05-27 15:06:33 INFO middleware.logger 127.0.0.1 POST /employee 201 1ms
+2026-05-27 15:06:33 INFO middleware.logger 127.0.0.1 POST /employee 201 1ms
+2026-05-27 15:06:34 INFO middleware.logger 127.0.0.1 POST /employee 201 2ms
+2026-05-27 15:08:05 INFO middleware.logger 127.0.0.1 POST /employee <bound method Request.body of <starlette.middleware.base._CachedRequest object at 0x77c6ab3c6060>> 201 2ms
+2026-05-27 15:08:05 INFO middleware.logger 127.0.0.1 POST /employee <bound method Request.body of <starlette.middleware.base._CachedRequest object at 0x77c6ab3c65d0>> 201 1ms
+2026-05-27 15:08:06 INFO middleware.logger 127.0.0.1 POST /employee <bound method Request.body of <starlette.middleware.base._CachedRequest object at 0x77c6ab3ff740>> 201 1ms
+2026-05-27 15:09:14 INFO middleware.logger 127.0.0.1 POST /employee 201 2ms
+2026-05-27 18:08:12 INFO middleware.logger 127.0.0.1 GET /docs 200 1ms
+2026-05-27 18:08:12 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 6ms
+2026-05-27 18:08:19 INFO middleware.logger 127.0.0.1 GET /employee 200 5ms
+2026-05-27 18:08:27 INFO middleware.logger 127.0.0.1 POST /employee 400 1ms
+2026-05-27 18:08:28 INFO middleware.logger 127.0.0.1 POST /employee 400 1ms
+2026-05-27 18:09:09 INFO middleware.logger 127.0.0.1 POST /employee 201 12ms
+2026-05-27 18:09:18 INFO middleware.logger 127.0.0.1 POST /employee 201 66ms
+2026-05-27 18:09:21 INFO middleware.logger 127.0.0.1 GET /employee 200 1ms
+2026-05-27 18:09:40 INFO middleware.logger 127.0.0.1 POST /employee 409 3ms
+2026-05-27 18:09:45 INFO middleware.logger 127.0.0.1 POST /employee 409 3ms
+2026-05-27 18:21:10 INFO middleware.logger 127.0.0.1 GET /docs 200 0ms
+2026-05-27 18:21:10 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 6ms
+2026-05-27 18:25:10 INFO middleware.logger 127.0.0.1 PUT /employee/1 200 67ms
+2026-05-27 18:25:20 INFO middleware.logger 127.0.0.1 GET /employee 200 3ms
+2026-05-27 18:29:08 INFO middleware.logger 127.0.0.1 GET /docs 200 0ms
+2026-05-27 18:29:08 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 1ms
+2026-05-27 18:29:18 INFO middleware.logger 127.0.0.1 GET /docs 200 1ms
+2026-05-27 18:29:18 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 2ms
+2026-05-27 18:29:45 INFO middleware.logger 127.0.0.1 DELETE /employee/1 200 67ms
+2026-05-27 18:29:51 INFO middleware.logger 127.0.0.1 GET /employee 200 3ms
+2026-05-27 18:31:25 INFO middleware.logger 127.0.0.1 GET /docs 200 0ms
+2026-05-27 18:31:25 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 2ms
+2026-05-27 18:31:30 INFO middleware.logger 127.0.0.1 GET /employee/2 200 6ms
+2026-05-27 18:32:01 INFO middleware.logger 127.0.0.1 GET /employee/1 200 2ms
+2026-05-27 18:32:37 INFO middleware.logger 127.0.0.1 GET /employee/1 200 5ms
+2026-05-27 18:32:41 INFO middleware.logger 127.0.0.1 GET /employee/2 200 2ms
+2026-05-27 18:33:37 INFO middleware.logger 127.0.0.1 PUT /employee/2 200 67ms
+2026-05-27 18:42:45 INFO middleware.logger 127.0.0.1 PUT /employee/2 200 68ms

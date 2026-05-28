@@ -1,0 +1,63 @@
+
+
+_employees: dict[int: dict] = {}
+_next_id: int = 1
+
+@dataclass
+class EmployeeCreate:
+    first_name: str
+    last_name: str 
+
+@dataclass
+class EmployeeUpdate:
+    first_name: str
+    last_name: str
+
+class EmployeePublic(TypedDict):
+    id: int
+    first_name: str
+    last_name: str
+    
+@app.get("/employee", tags={"Employee"}, description="employee list", response_model=list[EmployeePublic])
+def list_all_employee():
+    return _employees.values()
+
+@app.get("/employee/{id}", tags={"Employee"}, description="single employee", response_model=EmployeePublic)
+def single_employee(id: int):
+
+    global _employees
+
+    return _employees.get(id)
+
+@app.post("/employee", tags={"Employee"}, description="employee create", status_code=status.HTTP_201_CREATED, response_model=EmployeePublic)
+def create_employee(payload: EmployeeCreate):
+
+    global _next_id, _employees
+
+    _employees[_next_id] = {
+        "id": _next_id,
+        "first_name": payload.first_name,
+        "last_name": payload.last_name
+    }
+
+    _next_id += 1
+    return _employees[_next_id - 1]
+
+
+
+@app.put("/employee/{id}", tags={"Employee"}, description="employee update", response_model=EmployeePublic)
+def update_employee(payload: EmployeeUpdate, id: int):
+
+    global _employees
+
+    _employees[id] = _employees[id] | payload.__dict__
+
+    return _employees[id]
+
+
+@app.delete("/employee/{id}", tags={"Employee"}, description="employee delete", response_model=EmployeePublic)
+def delete_employee(id: int):
+
+    global _employees
+
+    return _employees.pop(id)
