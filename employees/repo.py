@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy import select, update
 
 from database import AsyncSession
-from models import Employee
+from models.employee import Employee
 
 # Manages only db related queries and return exact response
 
@@ -30,6 +30,17 @@ async def create(db: AsyncSession, name: str, email: str) -> Employee:
     await db.refresh(db_employee)
 
     return db_employee
+
+async def search(db: AsyncSession, name: str | None) -> list[Employee]:
+    
+    stnt = select(Employee).where(Employee.deleted_at.is_(None))
+
+    if name is not None and name:
+        stnt = stnt.where(Employee.name.ilike(f"%{name}%"))
+
+    results = await db.scalars(stnt)
+
+    return results
 
 async def find_all(db: AsyncSession) -> list[Employee]:
     

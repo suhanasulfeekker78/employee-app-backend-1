@@ -5,7 +5,7 @@ from fastapi.exceptions import HTTPException
 
 from database import AsyncSession
 from models.employee import Employee
-from repositories.employee_repo import create, find_all, find_by_id, update_by_id, delete_by_id
+from employees.repo import create, search, find_all, find_by_id, update_by_id, delete_by_id
 
 # Mainly manage business logics
 
@@ -23,6 +23,14 @@ async def create_employee(db: AsyncSession, name: str, email: str) -> Employee:
 
 async def list_employee(db: AsyncSession) -> list[Employee]:
     return await find_all(db)
+
+async def search_employee(db: AsyncSession, name: str) -> list[Employee]:
+
+    if name is not None:
+        name = name.strip()
+    
+    return await search(db, name)
+
 
 async def employee_by_id(db: AsyncSession, id: int) -> Employee:
     

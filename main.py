@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from middleware import configure_middleware
 
-from routers.employee_router import router as employee_router
+from employees.router import router as employee_router
+
 from config import APP_ENV
 
 logging.basicConfig(
