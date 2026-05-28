@@ -6,7 +6,7 @@ from models.entity import Entity, datetime_to_iso
 class Department(Entity):
     __tablename__= "departments"
 
-    name: Mapped[str] = mapped_column(String(20), nullable=False)
+    name: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
 
     employees: Mapped[list["Employee"]] = relationship("Employee", back_populates="departments")
 
