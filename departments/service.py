@@ -1,7 +1,7 @@
 
 
 from database import AsyncSession
-from departments.repo import create, find_all, update_by_id
+from departments.repo import create, find_all, update_by_id, insert_employee_to_department, delete_employee_from_department
 from models.department import Department
 
 async def create_department(db:AsyncSession,  data: dict) -> Department:
@@ -33,3 +33,9 @@ async def update_department(db:AsyncSession, id: int, data: dict) -> Department:
 async def list_all_department(db:AsyncSession):
     return (await find_all(db))  
 
+
+async def add_employee_to_department(db:AsyncSession, id: int, employee_id: int):
+    return await insert_employee_to_department(db, id, employee_id)    
+
+async def remove_employee_to_department(db:AsyncSession, id: int, employee_id: int):
+    return await delete_employee_from_department(db, id, employee_id)
