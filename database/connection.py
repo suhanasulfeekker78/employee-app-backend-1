@@ -11,7 +11,7 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/employee_db"
+from config import DATABASE_URL
 
 
 class Base(DeclarativeBase):

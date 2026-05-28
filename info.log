@@ -98,3 +98,9 @@
 2026-05-28 11:51:54 INFO middleware.logger 127.0.0.1 PUT /employee/6 200 8ms
 2026-05-28 11:52:04 INFO middleware.logger 127.0.0.1 DELETE /employee/6 200 63ms
 2026-05-28 11:52:06 INFO middleware.logger 127.0.0.1 DELETE /employee/6 404 3ms
+2026-05-28 12:36:53 INFO middleware.logger 127.0.0.1 GET /docs 200 1ms
+2026-05-28 12:36:53 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 2ms
+2026-05-28 12:36:57 INFO middleware.logger 127.0.0.1 GET /docs 200 0ms
+2026-05-28 12:36:57 INFO middleware.logger 127.0.0.1 GET /openapi.json 200 0ms
+2026-05-28 12:37:02 INFO middleware.logger 127.0.0.1 GET /health 200 2ms
+2026-05-28 12:37:05 INFO middleware.logger 127.0.0.1 GET /health 200 0ms

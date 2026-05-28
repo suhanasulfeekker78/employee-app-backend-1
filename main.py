@@ -6,6 +6,7 @@ from middleware import configure_middleware
 
 from database import create_tables
 from routers.employee_router import router as employee_router
+from config import APP_ENV
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,5 +33,5 @@ app.include_router(employee_router)
 
 @app.get("/health", tags=["Health"])
 def health_check():
-    return {"status": "healthy", "message": "Employee CRUD API is running"}
+    return {"status": "healthy", "message": "Employee CRUD API is running", "environment": APP_ENV}
 
