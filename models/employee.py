@@ -8,6 +8,7 @@ from sqlalchemy import  Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.entity import Entity, datetime_to_iso
+from models.employee_x_department import Employee_X_Department
 
 class Employee(Entity):
     __tablename__ = "employees"
@@ -21,7 +22,7 @@ class Employee(Entity):
         back_populates="employee"
     )
 
-    departments: Mapped[list["Department"]] = relationship("Department", back_populates="employees")
+    departments: Mapped[list["Department"]] = relationship("Department",secondary=Employee_X_Department.__table__, back_populates="employees")
 
     def to_api_dict(self) -> dict[str, Any]:
         """JSON-friendly representation (ISO 8601 for timestamps)."""

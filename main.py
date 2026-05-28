@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from middleware import configure_middleware
 
 from employees.router import router as employee_router
+from departments.router import router as department_router
 
 from config import APP_ENV
 
@@ -29,6 +30,8 @@ app = FastAPI(
 configure_middleware(app)
 
 app.include_router(employee_router)
+app.include_router(department_router)
+
 
 @app.get("/health", tags=["Health"])
 def health_check():
