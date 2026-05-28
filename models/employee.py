@@ -20,6 +20,9 @@ class Employee(Entity):
         "Address",
         back_populates="employee"
     )
+
+    departments: Mapped[list["Department"]] = relationship("Department", back_populates="employees")
+
     def to_api_dict(self) -> dict[str, Any]:
         """JSON-friendly representation (ISO 8601 for timestamps)."""
         return {
