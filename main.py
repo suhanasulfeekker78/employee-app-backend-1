@@ -1,13 +1,16 @@
 import logging
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from fastapi import Request
 
 from contextlib import asynccontextmanager
 from middleware import configure_middleware
 
 from employees.router import router as employee_router
 from departments.router import router as department_router
+from exceptions.handler import register_exception_handlers
 
-from config import APP_ENV
+from config import settings
 
 logging.basicConfig(
     level=logging.INFO,
@@ -29,11 +32,12 @@ app = FastAPI(
 
 configure_middleware(app)
 
+register_exception_handlers(app)
+
 app.include_router(employee_router)
 app.include_router(department_router)
 
-
 @app.get("/health", tags=["Health"])
 def health_check():
-    return {"status": "healthy", "message": "Employee CRUD API is running", "environment": APP_ENV}
+    return {"status": "healthy", "message": "Employee CRUD API is running", "environment": settings.app_env}
 

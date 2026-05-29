@@ -1,23 +1,26 @@
 """ Employee Service"""
 
 from fastapi import status
-from fastapi.exceptions import HTTPException
 
 from database import AsyncSession
 from models.employee import Employee
 from employees.repo import create, search, find_all, find_by_id, update_by_id, delete_by_id
+from exceptions import BadRequestException, NotFoundException
+from employees.schemas import CreateEmployeeRequest
+from auth.utils import hash_password
 
 # Mainly manage business logics
 
 
-async def create_employee(db: AsyncSession, name: str, email: str) -> Employee:
-
-    if not isinstance(name, str) or not name.strip():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="name must be a non-empty string")
-    if not isinstance(email, str) or not email.strip():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="email must be a non-empty string")
-    
-    employee = await create(db, name, email)
+async def create_employee(db: AsyncSession, data: CreateEmployeeRequest) -> Employee:
+    hashed=hash_password(data.pswd)
+    # employee:dict={
+    #     name:data.name,
+    #     email:data.email,
+    #     age:data.age,
+    #     password_hash:hashed
+    # }
+    employee = await create(db, data.name, data.email, data.age, password_hash=hashed)
 
     return employee
 
@@ -37,7 +40,7 @@ async def employee_by_id(db: AsyncSession, id: int) -> Employee:
     employee = await find_by_id(db, id)
 
     if employee is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="employee not found")
+        raise NotFoundException("employee not found")
     
     return employee
 
@@ -47,13 +50,13 @@ async def update_employee(db: AsyncSession, id: int, updated_data: dict) -> Empl
 
     if updated_data.get("name") is not None:
         if not isinstance(updated_data.get("name"), str):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="name must be a non-empty string")
+            raise BadRequestException("name must be a non-empty string")
         
         updated_fields["name"] = updated_data.get("name")
     
     if updated_data.get("email") is not None:
         if not isinstance(updated_data.get("email"), str):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="email must be a non-empty string")
+            raise BadRequestException("email must be a non-empty string")
         
         updated_fields["email"] = updated_data.get("email")
 

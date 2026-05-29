@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from fastapi import status
-from fastapi.exceptions import HTTPException
+from exceptions import ConflictException, NotFoundException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy import select, update
 from models.department import Department
@@ -22,7 +22,7 @@ async def create(db: AsyncSession, data: dict) -> Department:
 
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=f"{data.get("name")} already exist")
+        raise ConflictException(f"{data.get("name")} already exist")
     
     await db.refresh(department)
 
@@ -43,9 +43,9 @@ async def update_by_id(db: AsyncSession, id, data: dict) -> Department:
         await db.commit()
 
     except IntegrityError:
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=f"{data.get("name") or "department"} already exist")
+        raise ConflictException(f"{data.get("name") or "department"} already exist")
     except NoResultFound:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=f"department not found")
+        raise NotFoundException("department not found")
     
     return updated_department
 
@@ -59,7 +59,7 @@ async def insert_employee_to_department(db: AsyncSession, id: int, employee_id: 
         await db.commit()
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=f"employee already exist in the department")
+        raise ConflictException("employee already exist in the department")
     
     await db.refresh(employee_x_department)
     return employee_x_department
@@ -73,8 +73,8 @@ async def delete_employee_from_department(db: AsyncSession, id: int, employee_id
         await db.commit()
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=f"employee already exist in the department")
+        raise ConflictException("employee already exist in the department")
     except NoResultFound:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=f"employee to department record not found")
+        raise NotFoundException("employee to department record not found")
     
     return updated_employee_x_department

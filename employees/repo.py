@@ -3,19 +3,19 @@
 from datetime import datetime
 
 from fastapi import status
-from fastapi.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy import select, update
 
 from database import AsyncSession
+from exceptions import ConflictException, NotFoundException
 from models.employee import Employee
 
 # Manages only db related queries and return exact response
 
 
-async def create(db: AsyncSession, name: str, email: str) -> Employee:
+async def create(db: AsyncSession, name: str, email: str, age:int|None, password_hash:str) -> Employee:
 
-    db_employee = Employee(name=name, email=email)
+    db_employee = Employee(name=name, email=email, age=age, password_hash=password_hash)
 
     db.add(db_employee)
 
@@ -24,7 +24,7 @@ async def create(db: AsyncSession, name: str, email: str) -> Employee:
 
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Email '{email.strip()}' is already in use")
+        raise ConflictException(f"Email '{email.strip()}' is already in use")
         
 
     await db.refresh(db_employee)
@@ -52,7 +52,7 @@ async def find_all(db: AsyncSession) -> list[Employee]:
 
 async def find_by_id(db: AsyncSession, id: int) -> Employee:
     
-    stnt = select(Employee).where(Employee.id == id)
+    stnt = select(Employee).where(Employee.id == id,Employee.deleted_at.is_(None))
 
     employee = await db.scalar(stnt)
 
@@ -73,9 +73,9 @@ async def update_by_id(db: AsyncSession, id: int, updated_data: dict):
 
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Email '{updated_data.get("email")}' is already in use")
+        raise ConflictException(f"Email '{updated_data.get("email")}' is already in use")
     except NoResultFound:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"user not found")
+        raise NotFoundException("user not found")
     return updated_employee
 
 async def delete_by_id(db: AsyncSession, id: int):
@@ -89,6 +89,10 @@ async def delete_by_id(db: AsyncSession, id: int):
         await db.commit()
 
     except NoResultFound:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"user not found or has already deleted")
+        raise NotFoundException("user not found or has already deleted")
     
     return updated_employee
+
+async  def get_by_email(db: AsyncSession, email:str)->Employee|None:
+    stmt= select(Employee).where( Employee.email==email,Employee.deleted_at.is_(None),)
+    return await db.scalars(stmt).first()

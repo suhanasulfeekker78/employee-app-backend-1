@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.entity import Entity, datetime_to_iso
 from models.employee_x_department import Employee_X_Department
+from models.address import Address
 
 class Employee(Entity):
     __tablename__ = "employees"
@@ -16,11 +17,16 @@ class Employee(Entity):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     age: Mapped[int] = mapped_column(Integer, nullable=True)
+    password_hash: Mapped[str] = mapped_column(String(255),nullable=False)
     
     addresses: Mapped[list["Address"]] = relationship(
         "Address",
         back_populates="employee"
     )
+
+    # @property
+    # def addresses(self) -> list["Address"]:
+    #     return [a for a in self.addresses if a.deleted_at is None]
 
     departments: Mapped[list["Department"]] = relationship("Department",secondary=Employee_X_Department.__table__, back_populates="employees")
 
