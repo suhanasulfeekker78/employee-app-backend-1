@@ -1,6 +1,28 @@
 version: "3.8"
 
 services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: employee_server_container
+    ports: 
+      - "8000:8000"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+     - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/employee_db
+    develop:
+      watch:
+        - path: .
+          target: /app
+          action: sync
+        - path: uv.lock
+          action: rebuild
+    command: ["uv","run","uvicorn","main:app","--port","8000","--host","0.0.0.0","--reload"]
+
   postgres:
     image: postgres:16-alpine
     container_name: employee_db_container
