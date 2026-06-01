@@ -12,7 +12,7 @@ async def login(db:AsyncSession, email:str, password:str) ->str:
     
     if not verify_password(password, employee.password_hash):
         raise UnauthorizedException("Invalid email or password")
-    token_data = {"id": employee.id, "email": employee.email}
+    token_data = {"id": employee.id, "email": employee.email, "role": employee.role.value}
     return {"access_token":create_access_token(token_data),
             "refresh_token":create_refresh_token(token_data)}
 
@@ -21,7 +21,7 @@ async def refresh_access_token(refresh_token: str) -> dict:
     if payload is None:
         raise UnauthorizedException("Invalid or expired refresh token")
         
-    token_data = {"id": payload.get("id"), "email": payload.get("email")}
+    token_data = {"id": payload.get("id"), "email": payload.get("email"),"role":payload.get("role")}
     new_access_token = create_access_token(token_data)
     
     return {

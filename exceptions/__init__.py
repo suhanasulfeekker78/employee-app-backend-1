@@ -19,3 +19,6 @@ class BadRequestException(AppException):
 
 class UnauthorizedException(AppException):
     """Unauthorized access while login"""
+
+class ForbiddenException(AppException):
+    """Unauthorized action"""

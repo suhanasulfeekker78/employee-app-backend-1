@@ -23,7 +23,7 @@ def decode_access_token(token:str)->dict| None:
     
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(days=7)
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.jwt_refresh_token_expiry_days)
     to_encode["exp"] = expire
     to_encode["type"] = "refresh" 
     return jwt.encode(to_encode, settings.jwt_secret, algorithm=settings.jwt_algorithm)

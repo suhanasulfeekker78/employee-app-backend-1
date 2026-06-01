@@ -2,7 +2,6 @@
 from sqlalchemy import String, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from models.entity import Entity, datetime_to_iso
-from models.employee import Employee
 
 class Address(Entity):
 

@@ -3,14 +3,20 @@ Employee entity — ORM mapped class for table `employees`.
 """
 
 from typing import Any
+import enum
 
 from sqlalchemy import  Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Enum
 
 from models.entity import Entity, datetime_to_iso
 from models.employee_x_department import Employee_X_Department
-from models.address import Address
-from models.department import Department
+
+class EmployeeRole(str,enum.Enum):
+    UI="UI"
+    UX="UX"
+    DEVELOPER="Developer"
+    HR="HR"
 
 class Employee(Entity):
     __tablename__ = "employees"
@@ -19,6 +25,9 @@ class Employee(Entity):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     age: Mapped[int] = mapped_column(Integer, nullable=True)
     password_hash: Mapped[str] = mapped_column(String(255),nullable=False)
+    role: Mapped[EmployeeRole] = mapped_column(Enum(EmployeeRole, 
+                                                    name="employeerole",
+                                                    values_callable=lambda enum_cls: [e.value for e in enum_cls]),nullable=False,server_default=EmployeeRole.DEVELOPER.value)
     
     addresses: Mapped[list["Address"]] = relationship(
         "Address",

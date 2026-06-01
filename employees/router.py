@@ -10,13 +10,15 @@ from employees import service
 
 from employees.schemas import CreateEmployeeRequest, CreateEmployeeResponse, GetEmployeeByIDResponse
 from employees.schemas import UpdateEmployeeRequest
+from auth.dependencies import require_role
+from models.employee import EmployeeRole
 
 # Contains mainly the routes , parsing logics 
 
 router = APIRouter(prefix="/employee", tags=["Employees"])
 
-@router.post("", status_code=status.HTTP_201_CREATED,response_model=CreateEmployeeResponse)
-async def create_employee(body: CreateEmployeeRequest , db: AsyncSession = Depends(get_db), _current_user: TokenPayload = Depends(get_current_user)):
+@router.post("", status_code=status.HTTP_201_CREATED,response_model=CreateEmployeeResponse, dependencies=[Depends(require_role(EmployeeRole.HR))])
+async def create_employee(body: CreateEmployeeRequest , db: AsyncSession = Depends(get_db)):
     employee = await service.create_employee(db, body)
 
     return employee
@@ -45,14 +47,14 @@ async def get_employee_by_id(id: int, db: AsyncSession = Depends(get_db),_curren
 
     return employee
 
-@router.put("/{id}", response_model=GetEmployeeByIDResponse)
+@router.put("/{id}", response_model=GetEmployeeByIDResponse, dependencies=[Depends(require_role(EmployeeRole.HR))])
 async def update_employee(id: int, body: UpdateEmployeeRequest, db: AsyncSession = Depends(get_db), _current_user: TokenPayload = Depends(get_current_user)):
 
     updated_employee = await service.update_employee(db, id, body)
 
     return updated_employee
 
-@router.delete("/{id}", response_model=GetEmployeeByIDResponse)
+@router.delete("/{id}", response_model=GetEmployeeByIDResponse, dependencies=[Depends(require_role(EmployeeRole.HR))])
 async def delete_employee(id: int, db: AsyncSession = Depends(get_db),_current_user: TokenPayload = Depends(get_current_user)):
 
     employee = await service.delete_employee(db, id)

@@ -3,7 +3,6 @@ from sqlalchemy import String, Any
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from models.entity import Entity, datetime_to_iso
 from models.employee_x_department import Employee_X_Department
-from models.employee import Employee
 
 class Department(Entity):
     __tablename__= "departments"

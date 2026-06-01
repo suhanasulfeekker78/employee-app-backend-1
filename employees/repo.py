@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 
 from database import AsyncSession
 from exceptions import ConflictException, NotFoundException
-from models.employee import Employee, Address, Employee_X_Department, Department
+from models import Employee, Address, Employee_X_Department, Department
 
 # Manages only db related queries and return exact response
 
@@ -58,7 +58,7 @@ async def find_all(db: AsyncSession) -> list[Employee]:
 
     results = await db.scalars(stmt)
 
-    return list(results.all)
+    return list(results.all())
 
 async def find_by_id(db: AsyncSession, id: int) -> Employee:
     
