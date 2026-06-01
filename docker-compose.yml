@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: employee_server_container
-    ports: 
+    ports:
       - "8000:8000"
     depends_on:
       - postgres

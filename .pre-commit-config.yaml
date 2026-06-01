@@ -1,4 +1,10 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files  # prevents accidental large file commits
+      - id: end-of-file-fixer        # ensures files end with newline
+      - id: trailing-whitespace      # removes trailing whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.15
     hooks:

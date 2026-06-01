@@ -6,7 +6,7 @@ _next_id: int = 1
 @dataclass
 class EmployeeCreate:
     first_name: str
-    last_name: str 
+    last_name: str
 
 @dataclass
 class EmployeeUpdate:
@@ -17,7 +17,7 @@ class EmployeePublic(TypedDict):
     id: int
     first_name: str
     last_name: str
-    
+
 @app.get("/employee", tags={"Employee"}, description="employee list", response_model=list[EmployeePublic])
 def list_all_employee():
     return _employees.values()
