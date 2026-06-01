@@ -7,4 +7,11 @@ from models.employee_x_department import Employee_X_Department
 
 from models.entity import Entity, datetime_to_iso
 
-__all__ = ["Entity", "Employee", "Address","Department", "Employee_X_Department", "datetime_to_iso"]
+__all__ = [
+    "Entity",
+    "Employee",
+    "Address",
+    "Department",
+    "Employee_X_Department",
+    "datetime_to_iso",
+]

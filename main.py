@@ -1,7 +1,5 @@
 import logging
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from fastapi import Request
 
 from contextlib import asynccontextmanager
 from middleware import configure_middleware
@@ -16,18 +14,20 @@ from config import settings
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
 
+
 app = FastAPI(
-    title="Employee CRUD API", 
-    description="Simple Employee API with dict storage ", 
+    title="Employee CRUD API",
+    description="Simple Employee API with dict storage ",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 configure_middleware(app)
@@ -38,7 +38,11 @@ app.include_router(employee_router)
 app.include_router(department_router)
 app.include_router(auth_router)
 
+
 @app.get("/health", tags=["Health"])
 def health_check():
-    return {"status": "healthy", "message": "Employee CRUD API is running", "environment": settings.app_env}
-
+    return {
+        "status": "healthy",
+        "message": "Employee CRUD API is running",
+        "environment": settings.app_env,
+    }

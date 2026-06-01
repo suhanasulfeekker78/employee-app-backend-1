@@ -1,20 +1,30 @@
-from fastapi import FastAPI,Request,status
+from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from exceptions import AppException, NotFoundException, BadRequestException, ConflictException, UnauthorizedException, ForbiddenException
+from exceptions import (
+    AppException,
+    NotFoundException,
+    BadRequestException,
+    ConflictException,
+    UnauthorizedException,
+    ForbiddenException,
+)
 
-_STATUS_MAP:dict[type[AppException],int]={
+_STATUS_MAP: dict[type[AppException], int] = {
     NotFoundException: status.HTTP_404_NOT_FOUND,
     BadRequestException: status.HTTP_400_BAD_REQUEST,
     ConflictException: status.HTTP_409_CONFLICT,
     UnauthorizedException: status.HTTP_401_UNAUTHORIZED,
-    ForbiddenException: status.HTTP_403_FORBIDDEN
+    ForbiddenException: status.HTTP_403_FORBIDDEN,
 }
 
-def register_exception_handlers(app:FastAPI)->None:
+
+def register_exception_handlers(app: FastAPI) -> None:
     """Attach all exception handlers to app"""
 
     @app.exception_handler(AppException)
-    async def app_exception_handler(request: Request, exc:AppException)->JSONResponse:
-        code=_STATUS_MAP.get(type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return JSONResponse(status_code=code, content={"detail":exc.detail})
+    async def app_exception_handler(
+        request: Request, exc: AppException
+    ) -> JSONResponse:
+        code = _STATUS_MAP.get(type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JSONResponse(status_code=code, content={"detail": exc.detail})

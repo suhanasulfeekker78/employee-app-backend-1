@@ -17,8 +17,10 @@ class ConflictException(AppException):
 class BadRequestException(AppException):
     """Client input is invalid in a way Pydantic validation didn't catch."""
 
+
 class UnauthorizedException(AppException):
     """Unauthorized access while login"""
+
 
 class ForbiddenException(AppException):
     """Unauthorized action"""

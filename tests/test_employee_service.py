@@ -22,14 +22,14 @@ async def test_create_employee_persists_the_record():
     session_factory = async_sessionmaker(bind=engine, class_=AsyncSession)
 
     async with session_factory() as db:
-        hashed_password=hash_password("secret123")
+        hashed_password = hash_password("secret123")
         employee = await employee_service.create(
-            db, 
+            db,
             name="Ada",
-            email="ada@example.com", 
+            email="ada@example.com",
             age=None,
-            password_hash=hashed_password, 
-            address_data=None
+            password_hash=hashed_password,
+            address_data=None,
         )
         # employee = await db.run_sync(
         #     lambda sync_session: employee_service.create(sync_session, name="Ada",email="ada@example.com", age=None ,password_hash=hashed_password, address_data=None)

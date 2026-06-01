@@ -16,7 +16,7 @@ from database.connection import Base
 # import models.address  # noqa: F401
 # import models.associations  # noqa: F401
 # import models.department  # noqa: F401
-from models import *
+from models import *  # noqa F403
 
 config = context.config
 

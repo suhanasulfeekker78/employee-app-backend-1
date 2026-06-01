@@ -1,5 +1,3 @@
 """DB Connection Modules"""
 
-from database.connection import *
-
-__all__=["*"]
+from database.connection import *  # noqa: F403
