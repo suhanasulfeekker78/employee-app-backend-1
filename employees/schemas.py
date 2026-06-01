@@ -28,11 +28,17 @@ class CreateAddressInput(BaseModel):
             raise ValueError("Indian PIN codes must be exactly 6 digits")
         return self
     
-class AddressResponse(BaseModel):
+class EmployeeAddressResponse(BaseModel):
+    model_config=ConfigDict(from_attributes=True)
     line1:str
     city:str
     postal_code:str
     country:str
+
+class EmployeeDepartmentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    name: str
 
 class CreateEmployeeRequest(BaseModel):
     model_config =ConfigDict(str_strip_whitespace=True, extra='ignore')  # extra='forbid'/'ignore'
@@ -50,13 +56,20 @@ class CreateEmployeeResponse(BaseModel):
     email:EmailStr
     age: int | None
 
+class UpdateEmployeeRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra='ignore')
+    name: str | None = Field(default=None, min_length=1)
+    email: EmailStr | None = None
+    age: int | None = Field(default=None, ge=0, le=150)
+
 class GetEmployeeByIDResponse(BaseModel):
-    model_config=ConfigDict(from_attributes=True)
-    id:int
-    name:str
-    email:EmailStr
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    name: str
+    email: EmailStr
     age: int | None
     created_at: datetime
-    updated_at: datetime
-    # addresses: list[AddressResponse] | None
+    updated_at: datetime | None
+    addresses: list[EmployeeAddressResponse] = []
+    departments: list[EmployeeDepartmentResponse] = []
 

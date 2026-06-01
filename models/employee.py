@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from models.entity import Entity, datetime_to_iso
 from models.employee_x_department import Employee_X_Department
 from models.address import Address
+from models.department import Department
 
 class Employee(Entity):
     __tablename__ = "employees"
@@ -24,19 +25,19 @@ class Employee(Entity):
         back_populates="employee"
     )
 
-    # @property
-    # def addresses(self) -> list["Address"]:
-    #     return [a for a in self.addresses if a.deleted_at is None]
+    @property
+    def active_addresses(self) -> list["Address"]:
+        return [a for a in self.addresses if a.deleted_at is None]
 
     departments: Mapped[list["Department"]] = relationship("Department",secondary=Employee_X_Department.__table__, back_populates="employees")
 
-    def to_api_dict(self) -> dict[str, Any]:
-        """JSON-friendly representation (ISO 8601 for timestamps)."""
-        return {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "created_at": datetime_to_iso(self.created_at),
-            "updated_at": datetime_to_iso(self.updated_at),
-            "deleted_at": datetime_to_iso(self.deleted_at),
-        }
+    # def to_api_dict(self) -> dict[str, Any]:
+    #     """JSON-friendly representation (ISO 8601 for timestamps)."""
+    #     return {
+    #         "id": self.id,
+    #         "name": self.name,
+    #         "email": self.email,
+    #         "created_at": datetime_to_iso(self.created_at),
+    #         "updated_at": datetime_to_iso(self.updated_at),
+    #         "deleted_at": datetime_to_iso(self.deleted_at),
+    #     }
