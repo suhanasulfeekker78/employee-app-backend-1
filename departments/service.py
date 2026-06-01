@@ -1,41 +1,28 @@
 
 
 from database import AsyncSession
-from departments.repo import create, find_all, update_by_id, insert_employee_to_department, delete_employee_from_department
+from departments import repo as department_repo
 from models.department import Department
+from departments.schemas import CreateDepartmentRequest, UpdateDepartmentRequest
+from exceptions import NotFoundException
 
-async def create_department(db:AsyncSession,  data: dict) -> Department:
+async def create_department(db:AsyncSession,  body: CreateDepartmentRequest) -> Department:
 
-    valid_datas = {}
-
-    if data is not None and data.get("name"):
-        name = data.get("name")
-        if isinstance(name, str):
-            valid_datas["name"] = name.strip()
+    return await department_repo.create(db, {"name": body.name})
 
 
-    return await create(db, valid_datas)    
+async def update_department(db:AsyncSession, id: int, data: UpdateDepartmentRequest) -> Department:
+    return await department_repo.update_by_id(db, id, {"name": data.name})
 
 
-async def update_department(db:AsyncSession, id: int, data: dict) -> Department:
+async def list_all_department(db:AsyncSession)->list[Department]:
+    return await department_repo.find_all(db)
 
-    valid_datas = {}
+async def get_department_by_id(db: AsyncSession, id: int) -> Department:
+    department = await department_repo.find_by_id(db, id)
+    if department is None:
+        raise NotFoundException("Department not found")
+    return department
 
-    if data is not None and data.get("name"):
-        name = data.get("name")
-        if isinstance(name, str):
-            valid_datas["name"] = name.strip()
-
-
-    return (await update_by_id(db, id, valid_datas))  
-
-
-async def list_all_department(db:AsyncSession):
-    return (await find_all(db))  
-
-
-async def add_employee_to_department(db:AsyncSession, id: int, employee_id: int):
-    return await insert_employee_to_department(db, id, employee_id)    
-
-async def remove_employee_to_department(db:AsyncSession, id: int, employee_id: int):
-    return await delete_employee_from_department(db, id, employee_id)
+async def delete_department(db: AsyncSession, id: int) -> Department:
+    return await department_repo.delete_by_id(db, id)
