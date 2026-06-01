@@ -95,4 +95,5 @@ async def delete_by_id(db: AsyncSession, id: int):
 
 async  def get_by_email(db: AsyncSession, email:str)->Employee|None:
     stmt= select(Employee).where( Employee.email==email,Employee.deleted_at.is_(None),)
-    return await db.scalars(stmt).first()
+    result=await db.scalars(stmt)
+    return result.first()

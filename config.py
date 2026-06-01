@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     debug: bool = False
     jwt_secret: str
     jwt_algorithm:str
-    jwt_expiry_minutes:str
+    jwt_expiry_minutes:int
 
     model_config = SettingsConfigDict(
         env_file=".env",

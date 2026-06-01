@@ -1,6 +1,8 @@
 """Employee Router"""
 
 from fastapi import APIRouter, Body, status, Depends
+from auth.schemas import TokenPayload
+from auth.dependencies import get_current_user
 
 from database import AsyncSession, get_db
 
@@ -28,7 +30,7 @@ async def search_employee(name: str = "", db: AsyncSession = Depends(get_db)):
 
 
 @router.get("", response_model=list[CreateEmployeeResponse])
-async def list_employee(db: AsyncSession = Depends(get_db)):
+async def list_employee(db: AsyncSession = Depends(get_db), _current_user:TokenPayload = Depends(get_current_user)):
 
     employees = await service.list_employee(db)
 
