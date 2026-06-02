@@ -49,14 +49,3 @@ class Employee(Entity):
         secondary=Employee_X_Department.__table__,
         back_populates="employees",
     )
-
-    # def to_api_dict(self) -> dict[str, Any]:
-    #     """JSON-friendly representation (ISO 8601 for timestamps)."""
-    #     return {
-    #         "id": self.id,
-    #         "name": self.name,
-    #         "email": self.email,
-    #         "created_at": datetime_to_iso(self.created_at),
-    #         "updated_at": datetime_to_iso(self.updated_at),
-    #         "deleted_at": datetime_to_iso(self.deleted_at),
-    #     }

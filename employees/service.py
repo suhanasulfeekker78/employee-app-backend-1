@@ -55,7 +55,7 @@ async def employee_by_id(db: AsyncSession, id: int) -> Employee:
     employee = await find_by_id(db, id)
 
     if employee is None:
-        raise NotFoundException("employee not found")
+        raise NotFoundException(f"employee {id} not found")
 
     return employee
 

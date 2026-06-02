@@ -30,6 +30,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 testpaths      = ["tests"]
            # only walk tests/, not the whole repo
 python_files   = ["test_*.py"]
