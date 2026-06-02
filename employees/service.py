@@ -2,6 +2,7 @@
 
 from database import AsyncSession
 from models.employee import Employee
+from models.address import Address
 from employees.repo import (
     create,
     search,
@@ -9,6 +10,7 @@ from employees.repo import (
     find_by_id,
     update_by_id,
     delete_by_id,
+    add_address,
 )
 from employees.repo import (
     add_department_link,
@@ -16,7 +18,11 @@ from employees.repo import (
     remove_address_link,
 )
 from exceptions import BadRequestException, NotFoundException
-from employees.schemas import CreateEmployeeRequest, UpdateEmployeeRequest
+from employees.schemas import (
+    CreateAddressInput,
+    CreateEmployeeRequest,
+    UpdateEmployeeRequest,
+)
 from auth.utils import hash_password
 
 # Mainly manage business logics
@@ -91,3 +97,10 @@ async def delete_employee_address(
     db: AsyncSession, employee_id: int, address_id: int
 ) -> None:
     await remove_address_link(db, employee_id, address_id)
+
+
+async def add_employee_address(
+    db: AsyncSession, employee_id: int, body: CreateAddressInput
+) -> Address:
+    address_dict = body.model_dump()
+    return await add_address(db, employee_id, address_dict)

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload, with_loader_criteria
 
@@ -217,3 +217,28 @@ async def remove_address_link(
 
     address.deleted_at = datetime.now()
     await db.commit()
+
+
+async def add_address(
+    db: AsyncSession, employee_id: int, address_dict: dict
+) -> Address:
+    emp_stmt = select(Employee).where(
+        Employee.id == employee_id, Employee.deleted_at.is_(None)
+    )
+    if not await db.scalar(emp_stmt):
+        raise NotFoundException("Employee profile missing, or deleted")
+    address = Address(
+        line1=address_dict.get("line1"),
+        city=address_dict.get("city"),
+        postal_code=address_dict.get("postal_code"),
+        country=address_dict.get("country"),
+        employee_id=employee_id,
+    )
+    db.add(address)
+    try:
+        await db.commit()
+        await db.refresh(address)
+        return address
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise e

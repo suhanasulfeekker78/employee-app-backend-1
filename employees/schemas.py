@@ -84,3 +84,13 @@ class GetEmployeeByIDResponse(BaseModel):
     updated_at: datetime | None
     addresses: list[EmployeeAddressResponse] = []
     departments: list[EmployeeDepartmentResponse] = []
+
+
+class CreateAddressResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    employee_id: int
+    line1: str
+    city: str
+    postal_code: str
+    country: str

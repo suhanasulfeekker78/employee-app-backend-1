@@ -13,7 +13,11 @@ from employees.schemas import (
     CreateEmployeeResponse,
     GetEmployeeByIDResponse,
 )
-from employees.schemas import UpdateEmployeeRequest
+from employees.schemas import (
+    UpdateEmployeeRequest,
+    CreateAddressInput,
+    CreateAddressResponse,
+)
 from auth.dependencies import require_role
 from models.employee import EmployeeRole
 
@@ -135,3 +139,16 @@ async def delete_employee_address(
 ):
     await service.delete_employee_address(db, employee_id, address_id)
     return {"detail": "Employee address soft-deleted successfully"}
+
+
+@router.post(
+    "/{employee_id}/addresses",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CreateAddressResponse,
+    dependencies=[Depends(require_role(EmployeeRole.HR))],
+)
+async def add_employee_address(
+    employee_id: int, body: CreateAddressInput, db: AsyncSession = Depends(get_db)
+):
+    created_address = await service.add_employee_address(db, employee_id, body)
+    return created_address
