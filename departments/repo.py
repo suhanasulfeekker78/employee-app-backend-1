@@ -3,9 +3,10 @@ from datetime import datetime
 from exceptions import ConflictException, NotFoundException
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy import select, update
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_loader_criteria
 from models.department import Department
 from models.employee_x_department import Employee_X_Department
+from models.employee import Employee
 from database import AsyncSession
 
 
@@ -38,14 +39,12 @@ async def find_by_id(db: AsyncSession, id: int) -> Department | None:
     stmt = (
         select(Department)
         .where(Department.id == id, Department.deleted_at.is_(None))
-        .options(selectinload(Department.employees))
+        .options(
+            selectinload(Department.employees),
+            with_loader_criteria(Employee, Employee.deleted_at.is_(None)),
+        )
     )
     department = await db.scalar(stmt)
-
-    if department:
-        department.employees = [
-            emp for emp in department.employees if emp.deleted_at is None
-        ]
 
     return department
 
