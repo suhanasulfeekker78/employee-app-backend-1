@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, update
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_loader_criteria
 
 from database import AsyncSession
 from exceptions import ConflictException, NotFoundException
@@ -18,11 +18,14 @@ async def create(
     name: str,
     email: str,
     age: int | None,
+    role: str | None,
     password_hash: str,
     address_data: dict | None,
 ) -> Employee:
 
-    db_employee = Employee(name=name, email=email, age=age, password_hash=password_hash)
+    db_employee = Employee(
+        name=name, email=email, age=age, password_hash=password_hash, role=role
+    )
 
     db.add(db_employee)
 
@@ -38,20 +41,25 @@ async def create(
             )
             db.add(db_address)
         await db.commit()
-
+        await db.refresh(db_employee)
     except IntegrityError:
         await db.rollback()
         raise ConflictException(f"Email '{email.strip()}' is already in use")
 
-    return await find_by_id(db, db_employee.id)  # check
+    return db_employee
 
 
-async def search(db: AsyncSession, name: str | None) -> list[Employee]:
+async def search(db: AsyncSession, name: str) -> list[Employee]:
 
     stmt = (
         select(Employee)
         .where(Employee.deleted_at.is_(None))
-        .options(selectinload(Employee.addresses), selectinload(Employee.departments))
+        .options(
+            selectinload(Employee.addresses),
+            selectinload(Employee.departments),
+            with_loader_criteria(Address, Address.deleted_at.is_(None)),
+            with_loader_criteria(Department, Department.deleted_at.is_(None)),
+        )
     )
 
     if name:
@@ -76,13 +84,14 @@ async def find_by_id(db: AsyncSession, id: int) -> Employee:
     stmt = (
         select(Employee)
         .where(Employee.id == id, Employee.deleted_at.is_(None))
-        .options(selectinload(Employee.addresses), selectinload(Employee.departments))
+        .options(
+            selectinload(Employee.addresses),
+            selectinload(Employee.departments),
+            with_loader_criteria(Address, Address.deleted_at.is_(None)),
+            with_loader_criteria(Department, Department.deleted_at.is_(None)),
+        )
     )
     employee = await db.scalar(stmt)
-
-    if employee:
-        employee.addresses = [a for a in employee.addresses if a.deleted_at is None]
-        employee.departments = [d for d in employee.departments if d.deleted_at is None]
 
     return employee
 
@@ -97,32 +106,43 @@ async def update_by_id(db: AsyncSession, id: int, updated_data: dict):
     )
 
     try:
-        await db.execute(stmt)
-
+        result = await db.execute(stmt)
+        updated_employee = result.scalar()
+        if not updated_employee:
+            raise NotFoundException(f"Employee with ID {id} not found")
         await db.commit()
-
+        await db.refresh(updated_employee, attribute_names=["addresses", "departments"])
     except IntegrityError:
         await db.rollback()
-        raise ConflictException(
-            f"Email '{updated_data.get('email')}' is already in use"
-        )
+        raise ConflictException("Email is already in use")
 
-    return await find_by_id(db, id)
+    return updated_employee
 
 
 async def delete_by_id(db: AsyncSession, id: int) -> Employee:
-    employee = await find_by_id(db, id)
-    if not employee:
-        raise NotFoundException("User target profile missing or already deleted")
-
     now = datetime.now()
-    employee.deleted_at = now
-
-    for address in employee.addresses:
-        address.deleted_at = now
-
+    employee_stmt = (
+        update(Employee)
+        .where(Employee.id == id, Employee.deleted_at.is_(None))
+        .values(deleted_at=now)
+    )
+    result = await db.execute(employee_stmt)
+    if result.rowcount == 0:
+        raise NotFoundException("User target profile missing or already deleted")
+    await db.execute(
+        update(Address)
+        .where(Address.employee_id == id, Address.deleted_at.is_(None))
+        .values(deleted_at=now)
+    )
+    await db.execute(
+        update(Employee_X_Department)
+        .where(
+            Employee_X_Department.employee_id == id,
+            Employee_X_Department.deleted_at.is_(None),
+        )
+        .values(deleted_at=now)
+    )
     await db.commit()
-    return employee
 
 
 async def get_by_email(db: AsyncSession, email: str) -> Employee | None:
@@ -137,6 +157,11 @@ async def get_by_email(db: AsyncSession, email: str) -> Employee | None:
 async def add_department_link(
     db: AsyncSession, employee_id: int, department_id: int
 ) -> None:
+    emp_stmt = select(Employee).where(
+        Employee.id == employee_id, Employee.deleted_at.is_(None)
+    )
+    if not await db.scalar(emp_stmt):
+        raise NotFoundException("Employee profile missing, or deleted")
     dept_stmt = select(Department).where(
         Department.id == department_id, Department.deleted_at.is_(None)
     )

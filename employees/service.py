@@ -31,6 +31,7 @@ async def create_employee(db: AsyncSession, data: CreateEmployeeRequest) -> Empl
         data.name,
         data.email,
         data.age,
+        data.role,
         password_hash=hashed,
         address_data=address_dict,
     )
@@ -43,9 +44,6 @@ async def list_employee(db: AsyncSession) -> list[Employee]:
 
 
 async def search_employee(db: AsyncSession, name: str) -> list[Employee]:
-
-    if name is not None:
-        name = name.strip()
 
     return await search(db, name)
 
@@ -64,39 +62,32 @@ async def update_employee(
     db: AsyncSession, id: int, data: UpdateEmployeeRequest
 ) -> Employee:
 
-    updated_fields = data.model_dump(exclude_none=True)
+    updated_fields = data.model_dump(exclude_unset=True)
 
     if not updated_fields:
         raise BadRequestException(
             "No modified tracking properties found inside request body"
         )
-    await employee_by_id(db, id)
-    updated_employee = await update_by_id(db, id, updated_data=updated_fields)
-
-    return updated_employee
+    return await update_by_id(db, id, updated_data=updated_fields)
 
 
 async def delete_employee(db: AsyncSession, id: int) -> Employee:
-    await employee_by_id(db, id)
     return await delete_by_id(db, id)
 
 
 async def attach_department_to_employee(
     db: AsyncSession, employee_id: int, department_id: int
 ) -> None:
-    await employee_by_id(db, employee_id)  # Verify existence
     await add_department_link(db, employee_id, department_id)
 
 
 async def detach_employee_from_department(
     db: AsyncSession, employee_id: int, department_id: int
 ) -> None:
-    await employee_by_id(db, employee_id)  # Verify existence
     await remove_department_link(db, employee_id, department_id)
 
 
 async def delete_employee_address(
     db: AsyncSession, employee_id: int, address_id: int
 ) -> None:
-    await employee_by_id(db, employee_id)  # Verify existence
     await remove_address_link(db, employee_id, address_id)

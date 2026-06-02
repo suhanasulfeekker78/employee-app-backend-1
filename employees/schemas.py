@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator, EmailStr
 from pydantic import model_validator
+from models.employee import EmployeeRole
 
 from datetime import datetime
 
@@ -52,6 +53,7 @@ class CreateEmployeeRequest(BaseModel):
     age: int | None = Field(ge=0, le=150)
     address: CreateAddressInput | None = None
     pswd: str = Field(min_length=6)
+    role: EmployeeRole | None
 
 
 class CreateEmployeeResponse(BaseModel):
@@ -60,6 +62,7 @@ class CreateEmployeeResponse(BaseModel):
     name: str
     email: EmailStr
     age: int | None
+    role: EmployeeRole
 
 
 class UpdateEmployeeRequest(BaseModel):
@@ -67,6 +70,7 @@ class UpdateEmployeeRequest(BaseModel):
     name: str | None = Field(default=None, min_length=1)
     email: EmailStr | None = None
     age: int | None = Field(default=None, ge=0, le=150)
+    role: EmployeeRole | None = None
 
 
 class GetEmployeeByIDResponse(BaseModel):
@@ -75,6 +79,7 @@ class GetEmployeeByIDResponse(BaseModel):
     name: str
     email: EmailStr
     age: int | None
+    role: str
     created_at: datetime
     updated_at: datetime | None
     addresses: list[EmployeeAddressResponse] = []

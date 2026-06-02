@@ -1,8 +1,8 @@
 """Employee Router"""
 
-from fastapi import APIRouter, status, Depends
-from auth.schemas import TokenPayload
-from auth.dependencies import get_current_user
+from typing import Annotated
+
+from fastapi import APIRouter, Query, status, Depends
 
 from database import AsyncSession, get_db
 
@@ -36,11 +36,13 @@ async def create_employee(
     return employee
 
 
-@router.get("/search", response_model=list[GetEmployeeByIDResponse])
+@router.get(
+    "/search",
+    response_model=list[GetEmployeeByIDResponse],
+    dependencies=[Depends(require_role(*EmployeeRole))],
+)
 async def search_employee(
-    name: str = "",
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
+    name: Annotated[str, Query(min_length=1)], db: AsyncSession = Depends(get_db)
 ):
 
     employees = await service.search_employee(db, name)
@@ -48,10 +50,13 @@ async def search_employee(
     return employees
 
 
-@router.get("", response_model=list[CreateEmployeeResponse])
+@router.get(
+    "",
+    response_model=list[CreateEmployeeResponse],
+    dependencies=[Depends(require_role(*EmployeeRole))],
+)
 async def list_employee(
     db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
 ):
 
     employees = await service.list_employee(db)
@@ -59,12 +64,12 @@ async def list_employee(
     return employees
 
 
-@router.get("/{id}", response_model=GetEmployeeByIDResponse)
-async def get_employee_by_id(
-    id: int,
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
-):
+@router.get(
+    "/{id}",
+    response_model=GetEmployeeByIDResponse,
+    dependencies=[Depends(require_role(*EmployeeRole))],
+)
+async def get_employee_by_id(id: int, db: AsyncSession = Depends(get_db)):
 
     employee = await service.employee_by_id(db, id)
 
@@ -77,10 +82,7 @@ async def get_employee_by_id(
     dependencies=[Depends(require_role(EmployeeRole.HR))],
 )
 async def update_employee(
-    id: int,
-    body: UpdateEmployeeRequest,
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
+    id: int, body: UpdateEmployeeRequest, db: AsyncSession = Depends(get_db)
 ):
 
     updated_employee = await service.update_employee(db, id, body)
@@ -90,53 +92,46 @@ async def update_employee(
 
 @router.delete(
     "/{id}",
-    response_model=GetEmployeeByIDResponse,
+    status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[Depends(require_role(EmployeeRole.HR))],
 )
-async def delete_employee(
-    id: int,
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
-):
+async def delete_employee(id: int, db: AsyncSession = Depends(get_db)):
 
-    employee = await service.delete_employee(db, id)
-
-    return employee
+    return await service.delete_employee(db, id)
 
 
 # TASK3
 @router.post(
-    "/{employee_id}/departments/{department_id}", status_code=status.HTTP_200_OK
+    "/{employee_id}/departments/{department_id}",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role(EmployeeRole.HR))],
 )
 async def attach_department_to_employee(
-    employee_id: int,
-    department_id: int,
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
+    employee_id: int, department_id: int, db: AsyncSession = Depends(get_db)
 ):
     await service.attach_department_to_employee(db, employee_id, department_id)
     return {"detail": "Employee linked to department successfully"}
 
 
 @router.delete(
-    "/{employee_id}/departments/{department_id}", status_code=status.HTTP_200_OK
+    "/{employee_id}/departments/{department_id}",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role(EmployeeRole.HR))],
 )
 async def detach_employee_from_department(
-    employee_id: int,
-    department_id: int,
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
+    employee_id: int, department_id: int, db: AsyncSession = Depends(get_db)
 ):
     await service.detach_employee_from_department(db, employee_id, department_id)
     return {"detail": "Employee unlinked from department successfully"}
 
 
-@router.delete("/{employee_id}/addresses/{address_id}", status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{employee_id}/addresses/{address_id}",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_role(EmployeeRole.HR))],
+)
 async def delete_employee_address(
-    employee_id: int,
-    address_id: int,
-    db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(get_current_user),
+    employee_id: int, address_id: int, db: AsyncSession = Depends(get_db)
 ):
     await service.delete_employee_address(db, employee_id, address_id)
     return {"detail": "Employee address soft-deleted successfully"}

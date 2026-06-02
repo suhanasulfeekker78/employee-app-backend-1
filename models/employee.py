@@ -40,10 +40,6 @@ class Employee(Entity):
         "Address", back_populates="employee"
     )
 
-    @property
-    def active_addresses(self) -> list["Address"]:  # noqa: F821
-        return [a for a in self.addresses if a.deleted_at is None]
-
     departments: Mapped[list["Department"]] = relationship(  # noqa: F821
         "Department",
         secondary=Employee_X_Department.__table__,
