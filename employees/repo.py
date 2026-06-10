@@ -17,14 +17,22 @@ async def create(
     db: AsyncSession,
     name: str,
     email: str,
-    age: int | None,
     role: str | None,
+    status: str | None,
+    experience: str | None,
+    joining_date: datetime | None,
     password_hash: str,
     address_data: dict | None,
 ) -> Employee:
 
     db_employee = Employee(
-        name=name, email=email, age=age, password_hash=password_hash, role=role
+        name=name,
+        email=email,
+        password_hash=password_hash,
+        role=role,
+        status=status,
+        experience=experience,
+        joining_date=joining_date,
     )
 
     db.add(db_employee)

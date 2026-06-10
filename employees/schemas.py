@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator, EmailStr
 from pydantic import model_validator
-from models.employee import EmployeeRole
+from models.employee import EmployeeRole, EmployeeStatus
 
 from datetime import datetime
 
@@ -44,16 +44,15 @@ class EmployeeDepartmentResponse(BaseModel):
 
 
 class CreateEmployeeRequest(BaseModel):
-    model_config = ConfigDict(
-        str_strip_whitespace=True, extra="ignore"
-    )  # extra='forbid'/'ignore'
-
+    model_config = ConfigDict(str_strip_whitespace=True, extra="ignore")
     name: str = Field(min_length=1)
     email: EmailStr
-    age: int | None = Field(ge=0, le=150)
-    address: CreateAddressInput | None = None
-    pswd: str = Field(min_length=6)
     role: EmployeeRole | None
+    status: EmployeeStatus | None
+    experience: str | None
+    joiningDate: datetime | None
+    address: CreateAddressInput | None = None
+    pswd: str = Field(min_length=7)
 
 
 class CreateEmployeeResponse(BaseModel):
@@ -61,16 +60,20 @@ class CreateEmployeeResponse(BaseModel):
     id: int
     name: str
     email: EmailStr
-    age: int | None
     role: EmployeeRole
+    status: EmployeeStatus
+    experience: str | None
+    joiningDate: datetime | None = Field(validation_alias="joining_date")
 
 
 class UpdateEmployeeRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="ignore")
     name: str | None = Field(default=None, min_length=1)
     email: EmailStr | None = None
-    age: int | None = Field(default=None, ge=0, le=150)
     role: EmployeeRole | None = None
+    joining_date: datetime | None = None
+    status: EmployeeStatus | None = None
+    experience: str | None = None
 
 
 class GetEmployeeByIDResponse(BaseModel):
@@ -78,8 +81,10 @@ class GetEmployeeByIDResponse(BaseModel):
     id: int
     name: str
     email: EmailStr
-    age: int | None
     role: str
+    status: str
+    joiningDate: datetime | None = Field(validation_alias="joining_date")
+    experience: str | None
     created_at: datetime
     updated_at: datetime | None
     addresses: list[EmployeeAddressResponse] = []

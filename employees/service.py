@@ -36,8 +36,10 @@ async def create_employee(db: AsyncSession, data: CreateEmployeeRequest) -> Empl
         db,
         data.name,
         data.email,
-        data.age,
         data.role,
+        data.status,
+        data.experience,
+        joining_date=data.joiningDate,
         password_hash=hashed,
         address_data=address_dict,
     )
